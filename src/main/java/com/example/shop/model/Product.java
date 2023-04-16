@@ -20,26 +20,29 @@ public class Product {
     @Column(name = "status")
     private Status status;
 
-    public Product(String name, int price, int count, Status status)
+    public Product(Long id, String name, int price, int count, Status status)
     {
-        this.id = -1L;
+        this.id = id;
         setName(name);
+        setPrice(price);
         setCount(count);
         setStatus(status);
     }
 
-    public Product(String name, int price, int count)
+    public Product(Long id, String name, int price, int count)
     {
-        this.id = -1L;
+        this.id = id;
         setName(name);
+        setPrice(price);
         setCount(count);
         this.status = Status.none;
     }
 
-    public Product(String name, int price)
+    public Product(Long id, String name, int price)
     {
-        this.id = -1L;
+        this.id = id;
         setName(name);
+        setPrice(price);
         this.count = 1;
         this.status = Status.none;
     }

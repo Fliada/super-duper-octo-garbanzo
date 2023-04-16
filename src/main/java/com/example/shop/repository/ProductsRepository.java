@@ -1,12 +1,14 @@
 package com.example.shop.repository;
 
 import com.example.shop.model.Product;
+import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Repository
 public class ProductsRepository {
-    private Map<Long, Product> products = new HashMap<Long, Product>();
+    private final Map<Long, Product> products = new HashMap<Long, Product>();
 
     public void Add(Product product)
     {
