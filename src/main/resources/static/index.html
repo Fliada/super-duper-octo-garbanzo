@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Shop</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<h1>Shop</h1>
+
+<h2>List of Products</h2>
+<table id="productTable">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Count</th>
+        <th>Status</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<h2>Add New Product</h2>
+<form id="addProductForm">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required><br>
+    <label for="price">Price:</label>
+    <input type="number" id="price" name="price" required><br>
+    <label for="count">Count:</label>
+    <input type="number" id="count" name="count" required><br>
+    <input type="submit" value="Add Product">
+</form>
+
+<script>
+    $(document).ready(function() {
+        // Функция для обновления таблицы с продуктами
+        function updateProductTable() {
+            $.ajax({
+                url: '/api/list',
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    var tableHtml = '';
+                    for (var key in response) {
+                        if (response.hasOwnProperty(key)) {
+                            var product = response[key];
+                            tableHtml += '<tr>';
+                            tableHtml += '<td>' + product.id + '</td>';
+                            tableHtml += '<td>' + product.name + '</td>';
+                            tableHtml += '<td>' + product.price + '</td>';
+                            tableHtml += '<td>' + product.count + '</td>';
+                            tableHtml += '<td>' + product.status + '</td>';
+                            tableHtml += '<td><button class="markButton" data-id="' + product.id + '">Mark as Bought</button></td>';
+                            tableHtml += '<td><button class="deleteButton" data-id="' + product.id + '">Delete</button></td>';
+                            tableHtml += '</tr>';
+                        }
+                    }
+                    $('#productTable tbody').html(tableHtml);
+
+                    // Добавляем обработчик события нажатия на кнопку "Mark as Bought"
+                    $('.markButton').click(function() {
+                        var productId = $(this).data('id');
+                        markProductAsBought(productId);
+                    });
+
+                    // Добавляем обработчик события нажатия на кнопку "Delete"
+                    $('.deleteButton').click(function() {
+                        var productId = $(this).data('id');
+                        deleteProduct(productId);
+                    });
+                },
+                error: function(error) {
+                    console.error(error);
+                }
+            });
+        }
+
+        // Функция для изменения статуса продукта на "Bought"
+        function markProductAsBought(productId) {
+            $.ajax({
+                url: '/api/mark/' + productId,
+                type: 'PUT',
+                success: function(response) {
+                    // Обновляем таблицу с продуктами после успешного изменения статуса
+                    updateProductTable();
+                },
+                error: function(error) {
+                    console.error(error);
+                }
+            });
+        }
+
+        // Функция для удаления продукта
+        function deleteProduct(productId) {
+            $.ajax({
+                url: '/api/delete/' + productId,
+                type: 'DELETE',
+                success: function(response) {
+                    // Обновляем таблицу с продуктами после успешного удаления
+                    updateProductTable();
+                },
+                error: function(error) {
+                    console.error(error);
+                }
+            });
+        }
+
+        // Обработчик события отправки формы добавления продукта
+        $('#addProductForm').submit(function(event) {
+            event.preventDefault();
+
+            var name = $('#name').val();
+            var price = $('#price').val();
+            var count = $('#count').val();
+
+            $.ajax({
+                url: '/api/add',
+                type: 'PUT',
+                dataType: 'json',
+                data: {
+                    name: name,
+                    price: price,
+                    count: count
+                },
+                success: function(response) {
+                    // Очищаем поля формы после успешного добавления
+                    $('#name').val('');
+                    $('#price').val('');
+                    $('#count').val('');
+
+                    // Обновляем таблицу с продуктами
+                    updateProductTable();
+                },
+                error: function(error) {
+                    console.error(error);
+                }
+            });
+        });
+
+        // Инициализация страницы - получение списка продуктов
+        updateProductTable();
+    });
+
+</script>
+</body>
+</html>

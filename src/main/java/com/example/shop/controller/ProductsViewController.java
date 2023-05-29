@@ -13,8 +13,14 @@ import java.util.Map;
 public class ProductsViewController {
     @Autowired
     ProductService productService;
-    @GetMapping(path = "/")
-    public Map<Long, Product> list(Model model) {
+
+    @GetMapping("/api/list")
+    public Map<Long, Product> list() {
         return productService.listAllProducts();
+    }
+
+    @PostMapping("/api/{id}")
+    public Product product(@PathVariable Long id) {
+        return productService.getProduct(id);
     }
 }
